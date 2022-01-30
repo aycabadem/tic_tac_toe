@@ -51,27 +51,42 @@ class _MyHomePageState extends State<MyHomePage> {
     final tileDimension = boardDimension / 3;
 
     return Container(
-        width: boardDimension,
-        height: boardDimension,
-        child: Column(
-            children: chunk(_boardState, 3).asMap().entries.map((entry) {
-          final chunkIndex = entry.key;
-          final tileStateChunk = entry.value;
+      width: boardDimension,
+      height: boardDimension,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _buildMyBoardtile(0, tileDimension),
+              _buildMyBoardtile(1, tileDimension),
+              _buildMyBoardtile(2, tileDimension),
+            ],
+          ),
+          Row(
+            children: [
+              _buildMyBoardtile(3, tileDimension),
+              _buildMyBoardtile(4, tileDimension),
+              _buildMyBoardtile(5, tileDimension),
+            ],
+          ),
+          Row(
+            children: [
+              _buildMyBoardtile(6, tileDimension),
+              _buildMyBoardtile(7, tileDimension),
+              _buildMyBoardtile(8, tileDimension),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-          return Row(
-            children: tileStateChunk.asMap().entries.map((innerEntry) {
-              final innerIndex = innerEntry.key;
-              final tileState = innerEntry.value;
-              final tileIndex = (chunkIndex * 3) + innerIndex;
-
-              return BoardTile(
-                tileState: tileState,
-                dimension: tileDimension,
-                onPressed: () => _updateTileStateForIndex(tileIndex),
-              );
-            }).toList(),
-          );
-        }).toList()));
+  BoardTile _buildMyBoardtile(int index, double tileDimension) {
+    return BoardTile(
+      tileState: _boardState[index],
+      dimension: tileDimension,
+      onPressed: () => _updateTileStateForIndex(index),
+    );
   }
 
   void _updateTileStateForIndex(int selectedIndex) {
@@ -91,17 +106,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  TileState? _findWinner() {
-    TileState? Function(int, int, int) winnerForMatch = (a, b, c) {
-      if (_boardState[a] != TileState.EMPTY) {
-        if ((_boardState[a] == _boardState[b]) &&
-            (_boardState[b] == _boardState[c])) {
-          return _boardState[a];
-        }
+  TileState? winnerForMatch(int a, int b, int c) {
+    if (_boardState[a] != TileState.EMPTY) {
+      if ((_boardState[a] == _boardState[b]) &&
+          (_boardState[b] == _boardState[c])) {
+        return _boardState[a];
       }
-      return null;
-    };
+    }
+    return null;
+  }
 
+  TileState? _findWinner() {
     final checks = [
       winnerForMatch(0, 1, 2),
       winnerForMatch(3, 4, 5),
@@ -125,10 +140,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showWinnerDialog(TileState tileState) {
-    // final context = navigatorKey.currentState!.overlay!.context;
     showDialog(
         context: context,
-        builder: (_) {
+        builder: (aaa) {
           return AlertDialog(
             title: Text('Winner'),
             content: Image.asset(tileState == TileState.CROSS
@@ -136,11 +150,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 : 'images/a2.png'),
             actions: [
               TextButton(
-                  onPressed: () {
-                    _resetGame();
+                onPressed: () {
+                  _resetGame();
+                  if (Navigator.of(context).canPop())
                     Navigator.of(context).pop();
-                  },
-                  child: Text('New Game'))
+                },
+                child: Text('New Game'),
+              ),
             ],
           );
         });

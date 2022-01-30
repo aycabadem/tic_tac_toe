@@ -12,12 +12,13 @@ class BoardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: dimension,
-        height: dimension,
-        child: TextButton(
-          onPressed: onPressed,
-          child: _widgetForTileState(),
-        ));
+      width: dimension,
+      height: dimension,
+      child: TextButton(
+        onPressed: onPressed,
+        child: _widgetForTileState(),
+      ),
+    );
   }
 
   Widget _widgetForTileState() {
